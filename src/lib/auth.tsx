@@ -125,13 +125,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!supabase) return { error: null };
+    if (!supabase) return { error: 'Authentication is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable sign-in.' };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    if (!supabase) return { error: null };
+    if (!supabase) return { error: 'Authentication is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable sign-in.' };
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) return { error: error.message ?? null };
     if (!data.session) {
@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    if (!supabase) return { error: null };
+    if (!supabase) return { error: 'Authentication is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable sign-in.' };
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },
