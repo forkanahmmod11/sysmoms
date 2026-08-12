@@ -6,7 +6,7 @@ import { Reveal, RevealStagger, RevealItem, fadeUp, stagger } from '@/lib/motion
 import {
   ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, CircleHelp,
   ClipboardCheck, Clock3, CreditCard, FolderKanban, LayoutDashboard,
-  LoaderCircle, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings,
+  LoaderCircle, LogOut, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings,
   Sparkles, Target, TrendingUp, UsersRound, X, Zap,
 } from 'lucide-react';
 
@@ -76,6 +76,8 @@ function App() {
     const password = String(form.get('password') || '');
     const { error } = authMode === 'login' ? await signInWithEmail(email, password) : await signUpWithEmail(email, password);
     if (error) { setAuthError(error); setAuthLoading(false); return; }
+    // The auth provider has the session by this point, so take the user straight to the OMS.
+    setScreen('app');
     setAuthLoading(false);
   };
 
@@ -238,7 +240,7 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const activeLabel = useMemo(() => navItems.find((item) => item.view === view)?.label || 'Overview', [view]);
-  return <main className="workspace"><AnimatePresence>{mobileMenu && <motion.div className="sidebar-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} onClick={() => setMobileMenu(false)} />}</AnimatePresence><aside className={`sidebar ${mobileMenu ? 'open' : ''}`}><div className="sidebar-top"><Logo /><button className="close-mobile" onClick={() => setMobileMenu(false)}><X size={19} /></button></div><div className="workspace-switcher"><span className="workspace-symbol">N</span><span><strong>Northstar HQ</strong><small>Personal workspace</small></span><ChevronDown size={15} /></div><p className="nav-label">Workspace</p><nav className="side-nav">{navItems.map((item) => <button key={item.view} className={view === item.view ? 'active' : ''} onClick={() => { setView(item.view); setMobileMenu(false); }}><item.icon size={18} /><span>{item.label}</span>{item.badge && <b>{item.badge}</b>}</button>)}</nav><p className="nav-label">Manage</p><nav className="side-nav"><button className={view === 'transactions' ? 'active' : ''} onClick={() => { setView('transactions'); setMobileMenu(false); }}><CreditCard size={18} /><span>Transactions</span></button><button className={view === 'settings' ? 'active' : ''} onClick={() => { setView('settings'); setMobileMenu(false); }}><Settings size={18} /><span>Settings</span></button></nav><div className="sidebar-bottom"><div className="help-box"><CircleHelp size={18} /><span><strong>Need a hand?</strong><small>Visit help center</small></span><ArrowUpRight size={15} /></div><UserCard profile={profile} onLogout={onLogout} /></div></aside><section className="workspace-main"><header className="workspace-header"><button className="mobile-menu-button" onClick={() => setMobileMenu(true)}><Menu size={21} /></button><div className="breadcrumb"><span>Workspace</span><span>/</span><strong>{activeLabel}</strong></div><div className="header-actions"><button className={`icon-button ${searchOpen ? 'selected' : ''}`} onClick={() => setSearchOpen(!searchOpen)}><Search size={19} /></button><button className="icon-button notification"><Bell size={19} /><i /></button><HeaderAvatar profile={profile} /></div>{searchOpen && <div className="search-popover"><Search size={17} /><input autoFocus placeholder="Search anything..." /><span>⌘ K</span></div>}</header><div className="content-area"><AnimatePresence mode="wait"><motion.div key={view} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>{view === 'overview' ? <Overview onView={setView} profile={profile} /> : <SectionView view={view} />}</motion.div></AnimatePresence></div></section></main>;
+  return <main className="workspace"><AnimatePresence>{mobileMenu && <motion.div className="sidebar-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} onClick={() => setMobileMenu(false)} />}</AnimatePresence><aside className={`sidebar ${mobileMenu ? 'open' : ''}`}><div className="sidebar-top"><Logo /><button className="close-mobile" onClick={() => setMobileMenu(false)}><X size={19} /></button></div><div className="workspace-switcher"><span className="workspace-symbol">N</span><span><strong>Northstar HQ</strong><small>Personal workspace</small></span><ChevronDown size={15} /></div><p className="nav-label">Workspace</p><nav className="side-nav">{navItems.map((item) => <button key={item.view} className={view === item.view ? 'active' : ''} onClick={() => { setView(item.view); setMobileMenu(false); }}><item.icon size={18} /><span>{item.label}</span>{item.badge && <b>{item.badge}</b>}</button>)}</nav><p className="nav-label">Manage</p><nav className="side-nav"><button className={view === 'transactions' ? 'active' : ''} onClick={() => { setView('transactions'); setMobileMenu(false); }}><CreditCard size={18} /><span>Transactions</span></button><button className={view === 'settings' ? 'active' : ''} onClick={() => { setView('settings'); setMobileMenu(false); }}><Settings size={18} /><span>Settings</span></button></nav><div className="sidebar-bottom"><div className="help-box"><CircleHelp size={18} /><span><strong>Need a hand?</strong><small>Visit help center</small></span><ArrowUpRight size={15} /></div><UserCard profile={profile} onLogout={onLogout} /></div></aside><section className="workspace-main"><header className="workspace-header"><button className="mobile-menu-button" onClick={() => setMobileMenu(true)}><Menu size={21} /></button><div className="breadcrumb"><span>Workspace</span><span>/</span><strong>{activeLabel}</strong></div><div className="header-actions"><button className={`icon-button ${searchOpen ? 'selected' : ''}`} onClick={() => setSearchOpen(!searchOpen)}><Search size={19} /></button><button className="icon-button notification"><Bell size={19} /><i /></button><HeaderAvatar profile={profile} onLogout={onLogout} /></div>{searchOpen && <div className="search-popover"><Search size={17} /><input autoFocus placeholder="Search anything..." /><span>⌘ K</span></div>}</header><div className="content-area"><AnimatePresence mode="wait"><motion.div key={view} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}>{view === 'overview' ? <Overview onView={setView} profile={profile} /> : <SectionView view={view} />}</motion.div></AnimatePresence></div></section></main>;
 }
 
 function UserCard({ profile, onLogout }: { profile: UserProfile | null; onLogout: () => void }) {
@@ -248,9 +250,37 @@ function UserCard({ profile, onLogout }: { profile: UserProfile | null; onLogout
   return <div className="user-card-wrap"><button className="user-card" onClick={() => setOpen(!open)}>{profile?.avatarUrl ? <img src={profile.avatarUrl} alt={name} className="profile-avatar img" /> : <span className="profile-avatar">{initials(name)}</span>}<span><strong>{name}</strong><small>{role}</small></span><MoreHorizontal size={17} /></button>{open && <div className="user-popover"><button onClick={onLogout}>Sign out</button></div>}</div>;
 }
 
-function HeaderAvatar({ profile }: { profile: UserProfile | null }) {
-  const name = profile?.fullName || 'Guest';
-  return profile?.avatarUrl ? <img src={profile.avatarUrl} alt={name} className="header-avatar img" /> : <div className="header-avatar">{initials(name)}</div>;
+function HeaderAvatar({ profile, onLogout }: { profile: UserProfile | null; onLogout: () => void }) {
+  const [open, setOpen] = useState(false);
+  const name = profile?.fullName || 'User';
+  const email = profile?.email || '';
+  const role = profile?.role ? ROLE_LABELS[profile.role] : 'Workspace member';
+
+  return (
+    <div className="header-user-wrap">
+      <button
+        className="header-user-trigger"
+        onClick={() => setOpen(!open)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Open account menu"
+      >
+        {profile?.avatarUrl ? <img src={profile.avatarUrl} alt={name} className="header-avatar img" /> : <span className="header-avatar">{initials(name)}</span>}
+        <span className="header-user-copy"><strong>{name}</strong><small>Signed in</small></span>
+        <ChevronDown size={15} className={open ? 'account-chevron open' : 'account-chevron'} />
+      </button>
+      {open && (
+        <div className="header-user-popover" role="menu">
+          <div className="header-user-summary">
+            {profile?.avatarUrl ? <img src={profile.avatarUrl} alt="" className="profile-avatar img" /> : <span className="profile-avatar">{initials(name)}</span>}
+            <span><strong>{name}</strong><small>{email || role}</small></span>
+          </div>
+          <div className="account-status"><i /> Authenticated · {role}</div>
+          <button className="account-signout" onClick={onLogout}><LogOut size={16} /> Sign out</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function Overview({ onView, profile }: { onView: (view: View) => void; profile: UserProfile | null }) {
